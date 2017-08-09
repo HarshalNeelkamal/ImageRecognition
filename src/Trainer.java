@@ -59,6 +59,8 @@ public class Trainer {
 	
 	public int[] getMeanRGB(String loc_str){
 		Mat img = Imgcodecs.imread(loc_str);
+		if(!img.isContinuous())
+			return null;
 		Mat blur = new Mat();
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();

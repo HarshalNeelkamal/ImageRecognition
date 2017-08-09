@@ -26,6 +26,10 @@ public class MainClass {
 			Scanner s = new Scanner(System.in);
 			String testpath = s.next();
 			int data[] = t.getMeanRGB(testpath);
+			if(data == null){
+				System.out.println("invalid image path");
+				continue;
+			}
 			System.out.println("("+data[0]+", "+data[1]+", "+data[2]+", "+data[0]+")");
 			KDTree.returnInstance().nearestNeighoubrsFor(data);
 		}
