@@ -10,7 +10,10 @@ import org.opencv.imgproc.Imgproc;
 public class Trainer {
 	
 	private static Trainer t = null;
-	private ComparisionParas trainingSet = new ComparisionParas(3); 
+	private ComparisionParas trainingSetCol = new ComparisionParas(4); 
+	private ComparisionParas trainingSetShape = new ComparisionParas(4);
+	public static KDTree tree1 = new KDTree();
+	public static KDTree tree2 = new KDTree();
 	
 	private Trainer(){
 		
@@ -27,7 +30,6 @@ public class Trainer {
 		String images[] = directory.list();
 		System.out.println("\n"+setName+":");
 		for(int i = 0; i < images.length; i++){
-			//System.out.println(images[i]);
 			if(images[i].endsWith(".jpg")){
 				Mat img = Imgcodecs.imread(loc_str+"\\"+images[i]);
 				analyseAndStore(img, setName);
@@ -36,8 +38,16 @@ public class Trainer {
 	}
 	
 	public void trainingDone(){
-		trainingSet.moldForKtree();
-		trainingSet.printSet();
+		ComparisionParas.Node  nArr[] = trainingSetCol.returnCompletedSet();
+		trainingSetCol.printSet();
+		for(int i = 0; i < nArr.length; i++){
+			Trainer.getInstance().tree1.add(nArr[i]);
+		}
+		nArr = trainingSetShape.returnCompletedSet();
+		trainingSetShape.printSet();
+		for(int i = 0; i < nArr.length; i++){
+			Trainer.getInstance().tree2.add(nArr[i]);
+		}
 	}
 	
 	private void analyseAndStore(Mat img, String setName){
@@ -45,16 +55,18 @@ public class Trainer {
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();
 		Mat blur_binary = new Mat();
+		//Imgproc.resize(img, img, new Size(200,200));
 		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
 		Imgproc.GaussianBlur(img, blur, new Size(5,5), 25);
 		Imgproc.cvtColor(blur, blur_hsv, Imgproc.COLOR_RGB2HSV);
 		Core.inRange(blur_hsv, new Scalar(0,0,200), new Scalar(150,150,255), binary);
-		//blur_hsv = extractImage(binary,blur_hsv);
+		binary = extractImage(binary,binary);
+		int shape[] = shapeParas(binary);
 		Imgproc.cvtColor(img, binary, Imgproc.COLOR_RGB2GRAY);
 		Imgproc.cvtColor(blur, blur_binary, Imgproc.COLOR_RGB2GRAY);
 		int dist[] = meanValue(blur_hsv,binary, blur_binary);
-		trainingSet.Add(dist, setName);
-		//System.out.println("("+(int)dist[0]+","+(int)dist[1]+","+(int)dist[2]+")");
+		trainingSetShape.Add(shape, setName);
+		trainingSetCol.Add(dist, setName);
 	}
 	
 	public int[] getMeanRGB(String loc_str){
@@ -65,21 +77,27 @@ public class Trainer {
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();
 		Mat blur_binary = new Mat();
+		//Imgproc.resize(img, img, new Size(200,200));
 		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
-		Imgproc.GaussianBlur(img, blur, new Size(5,5), 5);
+		Imgproc.GaussianBlur(img, blur, new Size(5,5), 25);
 		Imgproc.cvtColor(blur, blur_hsv, Imgproc.COLOR_RGB2HSV);
 		Core.inRange(blur_hsv, new Scalar(0,0,200), new Scalar(150,150,255), binary);
+		binary = extractImage(binary,binary);
+		int shape[] = shapeParas(binary);
 		Imgproc.cvtColor(img, binary, Imgproc.COLOR_RGB2GRAY);
 		Imgproc.cvtColor(blur, blur_binary, Imgproc.COLOR_RGB2GRAY);
 		int dist[] = meanValue(blur_hsv,binary, blur_binary);
-		return dist;
+		return shape;
 	}
 	
 	public static Mat extractImage(Mat binary, Mat hsv){
 		for(int i = 0; i < hsv.size().height ; i++){
 			for(int j = 0; j < hsv.size().width ; j++){
 				if(binary.get(i, j)[0] == 255.0){
-					byte data[] = {0,0,0};
+					byte data[] = {0};
+					hsv.put(i, j, data);
+				}else{
+					byte data[] = {(byte)255};
 					hsv.put(i, j, data);
 				}
 			}
@@ -90,6 +108,7 @@ public class Trainer {
 	private int[] meanValue(Mat img1, Mat binary, Mat blur_binary){
 		int mean[] = {0,0,0,0};
 		double count = 0;  
+		//double count1 = 0;
 			for(int i = 0 ; i < img1.size().height; i++){
 				for(int j = 0 ; j < img1.size().width; j++){
 					mean[0] += (int)img1.get(i, j)[0];
@@ -108,17 +127,149 @@ public class Trainer {
 		return mean;
 	}
 	
-	private double eucledianDistance(Mat img1, Mat img2){
-		double dist = 0;
-		if(img2 == null){
-			for(int i = 0 ; i < img1.size().height; i++){
-				for(int j = 0 ; j < img1.size().width; j++){
-					dist += (img1.get(i, j)[0]*img1.get(i, j)[0]);
+	private int[] shapeParas(Mat extImg){
+		double data[] = new double[4];
+		int left = 0;
+		int right = 0;
+		int top = 0;
+		int bottom = 0;
+		int imageWidth = (int)extImg.size().width;
+		int imageHeight = (int)extImg.size().height;
+		for(int i = 0; i < imageWidth; i++){
+			for(int j = 0; j < imageHeight; j++){
+				if(extImg.get(j, i)[0] == 255){
+					int count = 0;
+					int pixels = 0;
+					while(pixels < 15){
+						if(i+pixels < extImg.size().width && extImg.get(j, i + pixels)[0] == 255){
+							count++;
+							if(count == 10){
+								left = i;
+								break;
+							}
+						}
+						pixels++;
+					}
 				}
+				if(left != 0)
+					break;
 			}
-			return Math.sqrt(dist);
+			if(left != 0)
+				break;
 		}
-		return dist;
+		for(int i = (int)extImg.size().width - 1; i > 0; i--){
+			for(int j = (int)extImg.size().height - 1; j > 0; j--){
+				if(extImg.get(j, i)[0] == 255){
+					int count =0;
+					int pixels = 0;
+					while(pixels < 15){
+						if(i-pixels > 0 && extImg.get(j, i - pixels)[0] == 255){
+							count++;
+							if(count == 10){
+								right = i;
+								break;
+							}
+						}
+						pixels++;
+					}
+				}
+				if(right != 0)
+					break;
+			}
+			if(right != 0)
+				break;
+		}
+		data[0] = right - left; //width;
+		
+		for(int i = 0; i <extImg.size().height; i++){
+			for(int j = 0; j <extImg.size().width; j++){
+				if(extImg.get(i, j)[0] == 255){
+					int count =0;
+					int pixels = 0;
+					while(pixels < 15){
+						if(i + pixels < extImg.size().height && extImg.get(i + pixels, j)[0] == 255){
+							count++;
+							if(count == 10){
+								top = i;
+								break;
+							}
+						}
+						pixels++;
+					}
+				}
+				if(top != 0)
+					break;
+			}
+			if(top != 0)
+				break;
+		}
+		for(int i = (int)extImg.size().height - 1; i > 0; i--){
+			for(int j = (int)extImg.size().width - 1; j > 0; j--){
+				if(extImg.get(i, j)[0] == 255){
+					int count =0;
+					int pixels = 0;
+					while(pixels < 15){
+						if(i - pixels > 0 && extImg.get(i- pixels, j )[0] == 255){
+							count++;
+							if(count == 10){
+								bottom = i;
+								break;
+							}
+						}
+						pixels++;
+					}
+				}
+				if(bottom != 0)
+					break;
+			}
+			if(bottom != 0)
+				break;
+		}
+		data[2] = bottom - top;
+		int tempTop = top;
+		int tempLeft = left;
+		int leftDiag = 0;
+		while(tempTop < bottom && tempLeft < right){
+			if(extImg.get(tempTop, tempLeft)[0] == 255)
+				leftDiag++;
+			tempTop++;
+			tempLeft++;
+		}
+		tempTop = top;
+		tempLeft = right;
+		int rightDiag = 0;
+		while(tempTop < bottom && tempLeft > left){
+			if(extImg.get(tempTop, tempLeft)[0] == 255)
+				rightDiag++;
+			tempTop++;
+			tempLeft--;
+		}
+		System.out.println(rightDiag+" "+leftDiag+" "+top+" "+bottom+" "+left+" "+right);
+
+		data[1] = (rightDiag*1.0)/data[0];
+		data[0] = (leftDiag*1.0)/data[0];
+		data[3] = (rightDiag*1.0)/data[2];
+		data[2] = (leftDiag*1.0)/data[2];
+		int intData[] = new int[data.length];
+		System.out.println("double: "+data[0]+" "+data[1]+" "+data[2]+" "+data[3]+" ");
+		for(int i = 0; i < intData.length; i++){
+			intData[i] = (int)(data[i]*100);
+		}
+		System.out.println("int: "+intData[0]+" "+intData[1]+" "+intData[2]+" "+intData[3]+" ");
+		return intData;
 	}
+	
+//	private double eucledianDistance(Mat img1, Mat img2){
+//		double dist = 0;
+//		if(img2 == null){
+//			for(int i = 0 ; i < img1.size().height; i++){
+//				for(int j = 0 ; j < img1.size().width; j++){
+//					dist += (img1.get(i, j)[0]*img1.get(i, j)[0]);
+//				}
+//			}
+//			return Math.sqrt(dist);
+//		}
+//		return dist;
+//	}
 	
 }

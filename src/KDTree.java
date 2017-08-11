@@ -7,16 +7,9 @@ import java.util.TreeMap;
 public class KDTree {
 	ComparisionParas.Node root = null;
 	int parameters = 4;
-	static KDTree tree = null;
 	
-	private KDTree() {
+	public KDTree() {
 
-	}
-	
-	public static KDTree returnInstance(){
-		if(tree == null)
-			tree = new KDTree();
-		return tree;
 	}
 	
 	public void add(ComparisionParas.Node n){
@@ -41,30 +34,11 @@ public class KDTree {
 		return root;	
 	}
 	
-	public void nearestNeighoubrsFor(int paras[]){
+	public HashMap<String,Integer> nearestNeighoubrsFor(int paras[]){
 		ComparisionParas.Node subSection = search(root, paras, 0);
 		HashMap<String,Integer> map = new HashMap<String,Integer>();
 		map = addNeighoubrs(map, subSection);
-		
-		////////////////////////////
-//		int k = 5;
-//		TreeMap<Double, String> treemap = new TreeMap<Double, String>();
-//		treemap = newAddNeighoubr(treemap, root, paras);
-//		if(treemap.size() < k)
-//			k = treemap.size();
-//		for(Double key : treemap.keySet()){
-//			if(map.containsKey(treemap.get(key))){
-//				int data = map.get(treemap.get(key));
-//				map.put(treemap.get(key), ++data);
-//			}else{
-//				map.put(treemap.get(key), 1);
-//			}
-//			k--;
-//			if(k == 0)
-//				break;
-//		}
-		////////////////////////////
-		
+				
 		int count = 0;
 		int max = 0;
 		String set = "";
@@ -76,6 +50,7 @@ public class KDTree {
 			}
 		}
 		System.out.println("prediction is: "+set+" with Accurancy: "+(((max*1.0)/count)*100)+"%");
+		return map;
 	}
 	
 	public TreeMap<Double, String> newAddNeighoubr(TreeMap<Double, String> map,ComparisionParas.Node n, int paras[]){
@@ -95,21 +70,6 @@ public class KDTree {
 		}
 		return Math.sqrt(sum);
 	}
-	
-//	public HashMap<Double, String> sortNeighoubrsAndReturnOnly(int k, HashMap<Double, String> map){
-//		if(map.size() < k)
-//			return map;
-//		HashMap<Double, String> newMap = new HashMap<Double, String>();
-//		for(int i = 0 ; i < k; i++){
-//			double min = Double.MAX_VALUE;
-//			for(double key : map.keySet()){
-//				if(key < min){
-//					
-//				}
-//			}
-//		}
-//		
-//	}
 	
 	public HashMap<String,Integer> addNeighoubrs(HashMap<String,Integer> map, ComparisionParas.Node n){
 		if(n == null)
