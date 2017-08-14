@@ -15,9 +15,9 @@ public class ComparisionParas {
 			set = setname;
 		}
 	}
+	
 	private int size = 0;
 	private int paraSize = 0;
-	private int top = 0;
 	Node arr[] = new Node[50];
 	
 	public ComparisionParas(int paraSize) {
@@ -37,7 +37,7 @@ public class ComparisionParas {
  		size++;
 	}
 	
-	public void moldForKtree(){		
+	private void moldForKtree(){		
 		penMerge(0, size-1, 0,new Node[size]);
 	}
 	

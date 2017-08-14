@@ -1,7 +1,6 @@
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.TreeMap;
 
 public class KDTree {
@@ -16,12 +15,15 @@ public class KDTree {
 		root = InternalAdd(root, n, 0);
 	}
 	
+	public boolean isEmpty(){
+		return root == null;
+	}
+	
 	private ComparisionParas.Node InternalAdd(ComparisionParas.Node root, ComparisionParas.Node n, int depth){
 		if(root == null){
 			root = n;
 			return root;
 		}
-		//System.out.println(depth%parameters);
 		if(n.paras[depth%parameters] < root.paras[depth%parameters]){
 			root.left = InternalAdd(root.left, n, depth+1);
 			root.lCount++;
@@ -37,20 +39,54 @@ public class KDTree {
 	public HashMap<String,Integer> nearestNeighoubrsFor(int paras[]){
 		ComparisionParas.Node subSection = search(root, paras, 0);
 		HashMap<String,Integer> map = new HashMap<String,Integer>();
-		map = addNeighoubrs(map, subSection);
-				
-		int count = 0;
-		int max = 0;
-		String set = "";
-		for(String key : map.keySet()){
-			count += map.get(key);
-			if(map.get(key) > max){
-				max = map.get(key);
-				set = key;
+//		map = addNeighoubrs(map, subSection);
+//		int count = 0;
+//		int max = 0;
+//		String set = "";
+//		for(String key : map.keySet()){
+//			count += map.get(key);
+//			if(map.get(key) > max){
+//				max = map.get(key);
+//				set = key;
+//			}
+//		}
+//		System.out.println("prediction is: "+set+" with Accurancy: "+(((max*1.0)/count)*100)+"%");
+		
+		Queue<ComparisionParas.Node> Q = new LinkedList<ComparisionParas.Node>();
+		Q = sortedNeighoubrsCollection(paras, subSection, Q);
+		int size = Q.size();
+		for(int i = 0; i< size; i++){
+			ComparisionParas.Node n = Q.remove();
+			if(map.containsKey(n.set)){
+				map.put(n.set, map.get(n.set) + 1);
+			}else{
+				map.put(n.set, 1);
 			}
+			if(i == 3)
+				break;
 		}
-		System.out.println("prediction is: "+set+" with Accurancy: "+(((max*1.0)/count)*100)+"%");
+			
 		return map;
+	}
+	
+	private Queue<ComparisionParas.Node> sortedNeighoubrsCollection(int paras[], ComparisionParas.Node node, Queue<ComparisionParas.Node> q){
+		if(node == null)
+			return q;
+		int size = q.size();
+		ComparisionParas.Node n = node;
+		while(size > 0){
+			if(eucledianDistance(paras, n.paras) < eucledianDistance(paras, q.peek().paras)){
+				q.add(n);
+				n = (q.remove());
+			}else{
+				q.add(q.remove());
+			}
+			size--;
+		}
+		q.add(n);
+		q = sortedNeighoubrsCollection(paras, node.left, q);
+		q = sortedNeighoubrsCollection(paras, node.right, q);
+		return q;
 	}
 	
 	public TreeMap<Double, String> newAddNeighoubr(TreeMap<Double, String> map,ComparisionParas.Node n, int paras[]){
@@ -66,7 +102,7 @@ public class KDTree {
 	public double eucledianDistance(int data1[],int data2[]){
 		double sum = 0;
 		for(int i = 0; i < data1.length; i++){
-			sum += data1[i]*data1[i] - data2[i]*data2[i];
+			sum += (data1[i] - data2[i])*(data1[i] - data2[i]);
 		}
 		return Math.sqrt(sum);
 	}
@@ -91,28 +127,36 @@ public class KDTree {
 		if(dataPara[depth%parameters] < root.paras[depth%parameters]){
 			if(root.left != null && root.lCount < 4)
 				return root;
-			else if(root.left != null)
-				return search(root.left, dataPara, depth + 1);
-			else 
-				return root;
-//			else if(root.left == null && root.rCount < 4)
-//				return root;
-//			else if(root.left != null)				
+//			else if(root.left != null)
 //				return search(root.left, dataPara, depth + 1);
-//			return search(root.right, dataPara, depth + 1);
+//			else 
+//				return root;
+			else if(root.left == null && root.rCount < 4)
+				return root;
+			else if(root.left != null)				
+				return search(root.left, dataPara, depth + 1);
+			return search(root.right, dataPara, depth + 1);
 		}else{
 			if(root.right != null && root.rCount < 4)
 				return root;
-			else if(root.right != null)
-				return search(root.right, dataPara, depth + 1);
-			else 
-				return root;
-//			else if(root.right == null && root.lCount < 4)
-//				return root;
-//			else if(root.right != null)				
+//			else if(root.right != null)
 //				return search(root.right, dataPara, depth + 1);
-//			return search(root.left, dataPara, depth + 1);
+//			else 
+//				return root;
+			else if(root.right == null && root.lCount < 4)
+				return root;
+			else if(root.right != null)				
+				return search(root.right, dataPara, depth + 1);
+			return search(root.left, dataPara, depth + 1);
 		}
+	}
+	
+	public void clear(){
+		if(root.left != null)
+			root.left.prev = null;
+		if(root.right != null)
+			root.right.prev = null;
+		root = null;
 	}
 	
 }
