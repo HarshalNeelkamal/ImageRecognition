@@ -189,9 +189,9 @@ public class UserInterface extends Observable{
 		browse1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("C:\\Users\\Harshal\\Desktop\\CSYE6205");
+				JFileChooser chooser = new JFileChooser("images");
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int choice = chooser.showOpenDialog(button1);
+				int choice = chooser.showOpenDialog(mainFrame);
 				if (choice != JFileChooser.APPROVE_OPTION) return;
 				File chosenFile = chooser.getSelectedFile();
 				String path = chosenFile.getPath();
@@ -209,9 +209,9 @@ public class UserInterface extends Observable{
 		browse2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("C:\\Users\\Harshal\\Desktop\\CSYE6205\\RandomImages");
+				JFileChooser chooser = new JFileChooser("images\\Predictable");
 				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-				int choice = chooser.showOpenDialog(button2);
+				int choice = chooser.showOpenDialog(mainFrame);
 				if (choice != JFileChooser.APPROVE_OPTION) return;
 				File chosenFile = chooser.getSelectedFile();
 				String path = chosenFile.getPath();
@@ -229,7 +229,7 @@ public class UserInterface extends Observable{
 		browse3.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("C:\\Users\\Harshal\\Desktop\\CSYE6205");
+				JFileChooser chooser = new JFileChooser("images");
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				int choice = chooser.showOpenDialog(mainFrame);
 				if (choice != JFileChooser.APPROVE_OPTION) return;
