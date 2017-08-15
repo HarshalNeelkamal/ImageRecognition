@@ -62,40 +62,83 @@ public class Tester {
 		return map1;
 	}
 	
-	public void findImagesForKey(String searchKey){
-		String baseAdd = "C:\\Users\\Harshal\\Desktop\\CSYE6205\\ImageDataBase";
-		File directory = new File(baseAdd);
-		String images[] = directory.list();
-		ArrayList<String> results = new ArrayList<String>();
-		int resultsCount = 0;
-		for(int i = 0; i < images.length; i++){
-			HashMap<String,Integer> map = KNNDataFor(baseAdd+"\\"+images[i]);
-			if(map == null){
-				UserInterface.getInstance().addTextToResultsField("No pitchures found in database that match key:" );
-				return;
-			}
-			int count = 0;
-			int max = 0;
-			String result = "";
-			for(String key : map.keySet()){
-				count += map.get(key);
-				if(map.get(key) > max){
-					max = map.get(key);
-					result = key;
-				}
-			}
-			if(result == searchKey){
-				 results.add(baseAdd+"\\"+images[i]); 
-				resultsCount++;
-			}else if(map.containsKey(searchKey)){
-				if(map.get(searchKey) == max){
-					 results.add(baseAdd+"\\"+images[i]); 
-					resultsCount++;
-				}
-			}
-			if(resultsCount == 10)
-				break;
+	private ArrayList<String> callForImages(String dir, ArrayList<String> results, String searchKey, int max){
+		
+		if(results.size() == 10){
+			return results;
 		}
+		
+		if(new File(dir).isDirectory()){
+			File directory = new File(dir);
+			String images[] = directory.list();
+			for(int i = 0; i< images.length; i++){
+				results = callForImages(dir+"\\"+images[i], results, searchKey, max);
+			}
+		}else{
+			if(dir.endsWith(".jpg")){
+				HashMap<String,Integer> map = KNNDataFor(dir);
+				String result = "";
+				for(String key : map.keySet()){
+					if(map.get(key) > max){
+						max = map.get(key);
+						result = key;
+					}
+				}
+				if(result == searchKey){
+					 results.add(dir); 
+				}else if(map.containsKey(searchKey)){
+					if(map.get(searchKey) == max){
+						 results.add(dir); 
+					}
+				}
+			}
+		}
+		
+		return results;
+	}
+	
+	public void findImagesForKey(String searchKey){
+		String baseAdd = UserInterface.getInstance().dataBase.getText();
+		if(!(new File(baseAdd).exists())){
+			UserInterface.getInstance().addTextToResultsField("Invalid address" );
+			return;
+		}
+		
+		/////////////////////////////////////////////
+		ArrayList<String> results = new ArrayList<String>();
+		callForImages(baseAdd, results, searchKey, 0);
+		/////////////////////////////////////////////
+		
+//		File directory = new File(baseAdd);
+//		String images[] = directory.list();
+//		ArrayList<String> results = new ArrayList<String>();
+//		int resultsCount = 0;
+//		for(int i = 0; i < images.length; i++){
+//			HashMap<String,Integer> map = KNNDataFor(baseAdd+"\\"+images[i]);
+//			if(map == null){
+//				UserInterface.getInstance().addTextToResultsField("No pitchures found in database that match key:" );
+//				return;
+//			}
+//			int max = 0;
+//			String result = "";
+//			for(String key : map.keySet()){
+//				if(map.get(key) > max){
+//					max = map.get(key);
+//					result = key;
+//				}
+//			}
+//			if(result == searchKey){
+//				 results.add(baseAdd+"\\"+images[i]); 
+//				resultsCount++;
+//			}else if(map.containsKey(searchKey)){
+//				if(map.get(searchKey) == max){
+//					 results.add(baseAdd+"\\"+images[i]); 
+//					resultsCount++;
+//				}
+//			}
+//			if(resultsCount == 10)
+//				break;
+//		}
 		
 		if(results.size() == 0){
 			UserInterface.getInstance().addTextToResultsField("No pitchures found in database that match key: "+ searchKey);

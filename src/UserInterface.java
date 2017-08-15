@@ -49,6 +49,7 @@ public class UserInterface extends Observable{
 	JPanel panel2;
 	JComboBox<String> box;
 	JLabel imageholder;
+	TextField dataBase;
 	
 	private static UserInterface instance = null;
 	
@@ -110,7 +111,10 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.WEST, field1, 5, SpringLayout.WEST, innerPanel1);
 		layout.putConstraint(SpringLayout.NORTH, field1, 1, SpringLayout.NORTH, innerPanel1);
 		layout.putConstraint(SpringLayout.SOUTH, field1, -7, SpringLayout.SOUTH, innerPanel1);
-		
+		layout.putConstraint(SpringLayout.NORTH, browse1, 1, SpringLayout.NORTH, innerPanel1);
+		layout.putConstraint(SpringLayout.SOUTH, browse1, -7, SpringLayout.SOUTH, innerPanel1);
+		layout.putConstraint(SpringLayout.NORTH, button1, 1, SpringLayout.NORTH, innerPanel1);
+		layout.putConstraint(SpringLayout.SOUTH, button1, -7, SpringLayout.SOUTH, innerPanel1);
 		
 		JLabel label2 = new JLabel("  Please paste a suitable path for the image that you desire to recognise");
 		TextField field2 = new TextField();
@@ -128,7 +132,10 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.WEST, field2, 5, SpringLayout.WEST, innerPanel2);
 		layout.putConstraint(SpringLayout.NORTH, field2, 1, SpringLayout.NORTH, innerPanel2);
 		layout.putConstraint(SpringLayout.SOUTH, field2, -7, SpringLayout.SOUTH, innerPanel2);
-		
+		layout.putConstraint(SpringLayout.NORTH, browse2, 1, SpringLayout.NORTH, innerPanel2);
+		layout.putConstraint(SpringLayout.SOUTH, browse2, -7, SpringLayout.SOUTH, innerPanel2);
+		layout.putConstraint(SpringLayout.NORTH, button2, 1, SpringLayout.NORTH, innerPanel2);
+		layout.putConstraint(SpringLayout.SOUTH, button2, -7, SpringLayout.SOUTH, innerPanel2);
 		
 		JLabel label3 = new JLabel("  Enter a search key");
 		String options[] = {"apples", "bananas", "kiwi", "peaches", "Oranges", "Pineapple"};
@@ -145,7 +152,23 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.WEST, box, 5, SpringLayout.WEST, innerPanel3);
 		layout.putConstraint(SpringLayout.NORTH, box, 1, SpringLayout.NORTH, innerPanel3);
 		layout.putConstraint(SpringLayout.SOUTH, box, -7, SpringLayout.SOUTH, innerPanel3);
+		layout.putConstraint(SpringLayout.NORTH, button3, 1, SpringLayout.NORTH, innerPanel3);
+		layout.putConstraint(SpringLayout.SOUTH, button3, -7, SpringLayout.SOUTH, innerPanel3);
 		
+		JLabel label4 = new JLabel("  Please paste a suitable URL or Browse a directory for your image Data Base");
+		dataBase = new TextField();
+		JButton browse3 = new JButton("Browse");
+		JPanel innerPanel4 = new JPanel();		
+		innerPanel4.setLayout(layout);
+		innerPanel4.add(dataBase);
+		innerPanel4.add(browse3);
+		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.WEST, browse3);
+		layout.putConstraint(SpringLayout.EAST, browse3, -5, SpringLayout.EAST, innerPanel4);
+		layout.putConstraint(SpringLayout.WEST, dataBase, 5, SpringLayout.WEST, innerPanel4);
+		layout.putConstraint(SpringLayout.NORTH, dataBase, 1, SpringLayout.NORTH, innerPanel4);
+		layout.putConstraint(SpringLayout.SOUTH, dataBase, -7, SpringLayout.SOUTH, innerPanel4);
+		layout.putConstraint(SpringLayout.NORTH, browse3, 1, SpringLayout.NORTH, innerPanel4);
+		layout.putConstraint(SpringLayout.SOUTH, browse3, -7, SpringLayout.SOUTH, innerPanel4);
 		
 		button1.addActionListener(new ActionListener() {
 			@Override
@@ -203,6 +226,18 @@ public class UserInterface extends Observable{
 				notifyObservers(arg);
 			}
 		});
+		browse3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser("C:\\Users\\Harshal\\Desktop\\CSYE6205");
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int choice = chooser.showOpenDialog(mainFrame);
+				if (choice != JFileChooser.APPROVE_OPTION) return;
+				File chosenFile = chooser.getSelectedFile();
+				String path = chosenFile.getPath();
+				dataBase.setText(path);
+			}
+		});
 		
 		
 		field4 = new JTextArea();
@@ -218,14 +253,17 @@ public class UserInterface extends Observable{
 		panel2.add(panel2inner);
 		
 		JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayout(7, 1));
+		panel1.setLayout(new GridLayout(8, 1));
 		panel1.setBounds(0, 0, mainFrame.getWidth()/2, mainFrame.getHeight() - 10);
 		panel1.add(label1);
 		panel1.add(innerPanel1);
 		panel1.add(label2);
 		panel1.add(innerPanel2);
+		panel1.add(label4);
+		panel1.add(innerPanel4);
 		panel1.add(label3);
 		panel1.add(innerPanel3);
+
 		
 		panel3 = new JPanel();
 		panel3.setLayout(new GridLayout(3, 1));
@@ -284,7 +322,7 @@ public class UserInterface extends Observable{
 			return;
 		}
 		Mat img = Imgcodecs.imread(loc);
-		Image image = mat2Img(img, imageholder.getWidth(), imageholder.getHeight());
+		Image image = mat2Img(img,  panel2.getWidth()/2, panel2.getHeight());
 		ImageIcon icon = new ImageIcon(image);
 		imageholder.setIcon(icon);
 		panel2.repaint();
