@@ -98,7 +98,7 @@ public class Tester {
 	}
 	
 	public void findImagesForKey(String searchKey){
-		String baseAdd = UserInterface.getInstance().dataBase.getText();
+		String baseAdd = "images\\DataBase";//UserInterface.getInstance().dataBase.getText();
 		if(!(new File(baseAdd).exists())){
 			UserInterface.getInstance().addTextToResultsField("Invalid address" );
 			return;
@@ -146,6 +146,16 @@ public class Tester {
 		}
 		
 		UserInterface.getInstance().addFoundImages(results);
+		int truePositive = 0;
+		int falsePositive = 0;
+		for(int i = 0; i < results.size(); i++){
+			if(results.get(i).contains("\\"+searchKey+"\\"))
+				truePositive++;
+			else
+				falsePositive++;
+		}
+		double precision = (truePositive*1.0)/(truePositive+falsePositive);
+		UserInterface.getInstance().dataBase.setText(" Precision = "+precision);
 		
 	}
 	

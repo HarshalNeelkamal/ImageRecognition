@@ -155,20 +155,22 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.NORTH, button3, 1, SpringLayout.NORTH, innerPanel3);
 		layout.putConstraint(SpringLayout.SOUTH, button3, -7, SpringLayout.SOUTH, innerPanel3);
 		
-		JLabel label4 = new JLabel("  Please paste a suitable URL or Browse a directory for your image Data Base");
+//		JLabel label4 = new JLabel("  Please paste a suitable URL or Browse a directory for your image Data Base");
 		dataBase = new TextField();
-		JButton browse3 = new JButton("Browse");
+		dataBase.setEditable(false);
+//		JButton browse3 = new JButton("Browse");
 		JPanel innerPanel4 = new JPanel();		
 		innerPanel4.setLayout(layout);
 		innerPanel4.add(dataBase);
-		innerPanel4.add(browse3);
-		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.WEST, browse3);
-		layout.putConstraint(SpringLayout.EAST, browse3, -5, SpringLayout.EAST, innerPanel4);
+//		innerPanel4.add(browse3);
+//		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.WEST, browse3);
+//		layout.putConstraint(SpringLayout.EAST, browse3, -5, SpringLayout.EAST, innerPanel4);
 		layout.putConstraint(SpringLayout.WEST, dataBase, 5, SpringLayout.WEST, innerPanel4);
+		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.EAST, innerPanel4);//delete if others are uncommented
 		layout.putConstraint(SpringLayout.NORTH, dataBase, 1, SpringLayout.NORTH, innerPanel4);
 		layout.putConstraint(SpringLayout.SOUTH, dataBase, -7, SpringLayout.SOUTH, innerPanel4);
-		layout.putConstraint(SpringLayout.NORTH, browse3, 1, SpringLayout.NORTH, innerPanel4);
-		layout.putConstraint(SpringLayout.SOUTH, browse3, -7, SpringLayout.SOUTH, innerPanel4);
+//		layout.putConstraint(SpringLayout.NORTH, browse3, 1, SpringLayout.NORTH, innerPanel4);
+//		layout.putConstraint(SpringLayout.SOUTH, browse3, -7, SpringLayout.SOUTH, innerPanel4);
 		
 		button1.addActionListener(new ActionListener() {
 			@Override
@@ -226,18 +228,18 @@ public class UserInterface extends Observable{
 				notifyObservers(arg);
 			}
 		});
-		browse3.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("images");
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int choice = chooser.showOpenDialog(mainFrame);
-				if (choice != JFileChooser.APPROVE_OPTION) return;
-				File chosenFile = chooser.getSelectedFile();
-				String path = chosenFile.getPath();
-				dataBase.setText(path);
-			}
-		});
+//		browse3.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser("images");
+//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//				int choice = chooser.showOpenDialog(mainFrame);
+//				if (choice != JFileChooser.APPROVE_OPTION) return;
+//				File chosenFile = chooser.getSelectedFile();
+//				String path = chosenFile.getPath();
+//				dataBase.setText(path);
+//			}
+//		});
 		
 		
 		field4 = new JTextArea();
@@ -253,17 +255,16 @@ public class UserInterface extends Observable{
 		panel2.add(panel2inner);
 		
 		JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayout(8, 1));
+		panel1.setLayout(new GridLayout(7, 1));
 		panel1.setBounds(0, 0, mainFrame.getWidth()/2, mainFrame.getHeight() - 10);
 		panel1.add(label1);
 		panel1.add(innerPanel1);
 		panel1.add(label2);
 		panel1.add(innerPanel2);
-		panel1.add(label4);
-		panel1.add(innerPanel4);
 		panel1.add(label3);
 		panel1.add(innerPanel3);
-
+//		panel1.add(label4);
+		panel1.add(innerPanel4);
 		
 		panel3 = new JPanel();
 		panel3.setLayout(new GridLayout(3, 1));
