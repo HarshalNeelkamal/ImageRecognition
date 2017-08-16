@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Label;
@@ -56,7 +57,7 @@ public class UserInterface extends Observable{
 	private UserInterface(){
 		mainFrame = new JFrame("ImageRecognizer");
 		mainFrame.setVisible(false);
-		mainFrame.setSize(500, 700);
+		mainFrame.setSize(600, 700);
 		buildInterface();
 	}
 	
@@ -71,10 +72,10 @@ public class UserInterface extends Observable{
 		DefaultCategoryDataset dcd = new DefaultCategoryDataset();
 		
 		if(map == null){
-			dcd.addValue(.1, "probablity1", "test1");
-			dcd.addValue(.1, "probablity2", "test3");
-			dcd.addValue(.1, "probablity3", "test2");
-			dcd.addValue(.1, "probablity4", "test4");
+			dcd.addValue(.0, "probablity1", "test1");
+			dcd.addValue(.0, "probablity2", "test3");
+			dcd.addValue(.0, "probablity3", "test2");
+			dcd.addValue(.0, "probablity4", "test4");
 		}else{
 			int total = map.get("total");
 			for(String key: map.keySet()){
@@ -158,6 +159,7 @@ public class UserInterface extends Observable{
 //		JLabel label4 = new JLabel("  Please paste a suitable URL or Browse a directory for your image Data Base");
 		dataBase = new TextField();
 		dataBase.setEditable(false);
+		dataBase.setFont(new Font("Serif", Font.BOLD, 16));
 //		JButton browse3 = new JButton("Browse");
 		JPanel innerPanel4 = new JPanel();		
 		innerPanel4.setLayout(layout);
@@ -182,6 +184,7 @@ public class UserInterface extends Observable{
 					button1.setText("Start training");
 					toggleEnabledButton();
 				}else{
+					dataBase.setText("Training.....");
 					String arg[] = {button1.getText(),field1.getText()};
 					setChanged();
 					notifyObservers(arg);
@@ -204,6 +207,7 @@ public class UserInterface extends Observable{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String arg[] = {button2.getText(),field2.getText()};
+				dataBase.setText("");
 				setChanged();
 				notifyObservers(arg);
 			}
@@ -224,8 +228,10 @@ public class UserInterface extends Observable{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String arg[] = {button3.getText(),box.getSelectedItem().toString()};
+				addGraphChart(null);
 				setChanged();
 				notifyObservers(arg);
+				
 			}
 		});
 //		browse3.addActionListener(new ActionListener() {
@@ -289,6 +295,7 @@ public class UserInterface extends Observable{
 		changeSelectionOptions(list);
 		toggleEnabledButton();
 		button1.setText("Reset");
+		dataBase.setText("Training Successfull");
 	}
 	
 	private void changeSelectionOptions(ArrayList<String> list){
@@ -340,7 +347,7 @@ public class UserInterface extends Observable{
 			Mat img = Imgcodecs.imread(list.get(i));
 			JLabel tempLab = new JLabel();
 			panel2inner.add(tempLab, 0, 0);
-			Image image = mat2Img(img, panel2.getWidth()/5, panel2.getHeight()/2);
+			Image image = mat2Img(img, panel2.getWidth()/8, panel2.getHeight()/2);
 			ImageIcon icon = new ImageIcon(image);
 			tempLab.setIcon(icon);
 		}
@@ -371,6 +378,7 @@ public class UserInterface extends Observable{
 	
 	public void alertWithMsg(String msg){
 		JOptionPane.showMessageDialog(mainFrame, msg);
+		dataBase.setText("");
 	}
 	
 	public void show(){

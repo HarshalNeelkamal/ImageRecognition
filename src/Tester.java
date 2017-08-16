@@ -64,7 +64,7 @@ public class Tester {
 	
 	private ArrayList<String> callForImages(String dir, ArrayList<String> results, String searchKey, int max){
 		
-		if(results.size() == 10){
+		if(results.size() == 15){
 			return results;
 		}
 		
