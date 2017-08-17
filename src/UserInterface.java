@@ -1,20 +1,16 @@
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Observable;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -45,8 +41,6 @@ public class UserInterface extends Observable{
 	JButton button1;
 	JButton button2;
 	JButton button3;
-//	JButton previous;
-//	JButton next;
 	JPanel panel2;
 	JComboBox<String> box;
 	JLabel imageholder;

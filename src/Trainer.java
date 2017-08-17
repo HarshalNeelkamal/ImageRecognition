@@ -45,14 +45,14 @@ public class Trainer {
 	
 	public void trainingDone(){
 		ComparisionParas.Node  nArr[] = trainingSetCol.returnCompletedSet();
-		trainingSetCol.printSet();
+		//trainingSetCol.printSet();
 		for(int i = 0; i < nArr.length; i++){
 			if(nArr[i] == null)
 				break;
 			tree1.add(nArr[i]);
 		}
 		nArr = trainingSetShape.returnCompletedSet();
-		trainingSetShape.printSet();
+		//trainingSetShape.printSet();
 		for(int i = 0; i < nArr.length; i++){
 			if(nArr[i] == null)
 				break;
@@ -89,18 +89,5 @@ public class Trainer {
 		tree1 = new KDTree();
 		tree2 = new KDTree();
 	}
-	
-//	private double eucledianDistance(Mat img1, Mat img2){
-//		double dist = 0;
-//		if(img2 == null){
-//			for(int i = 0 ; i < img1.size().height; i++){
-//				for(int j = 0 ; j < img1.size().width; j++){
-//					dist += (img1.get(i, j)[0]*img1.get(i, j)[0]);
-//				}
-//			}
-//			return Math.sqrt(dist);
-//		}
-//		return dist;
-//	}
 	
 }
