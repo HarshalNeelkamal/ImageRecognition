@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.ArrayList;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -15,6 +16,7 @@ public class Trainer {
 	private ComparisionParas trainingSetShape;
 	public  KDTree tree1;
 	public  KDTree tree2;
+	public  LeaveOutGraph graph;
 	
 	private Trainer(){
 		trainingSetCol = new ComparisionParas(trainingParameters);
@@ -29,7 +31,25 @@ public class Trainer {
 		return t;
 	}
 	
-	public void trainAtLocation(String loc_str, String setName){
+	public ArrayList<String> startWithDirectory(String location){
+		String path = location;
+		File directory = new File(path);
+		String sets[] = directory.list();
+		ArrayList<String> list = new ArrayList<String>();
+		if(sets != null){
+			graph = new LeaveOutGraph(sets.length, 8);
+			for(int i = 0 ; i < sets.length; i ++){
+				Trainer.getInstance().trainAtLocation(path+"\\"+sets[i],sets[i]);
+				if(!list.contains(sets[i])){
+					list.add(sets[i]);
+				}
+			}
+
+		}
+		return list;
+	}
+	
+	private void trainAtLocation(String loc_str, String setName){
 		File directory = new File(loc_str);
 		if(directory.isDirectory()){
 			String images[] = directory.list();
@@ -44,6 +64,7 @@ public class Trainer {
 	}
 	
 	public void trainingDone(){
+		graph.print();
 		ComparisionParas.Node  nArr[] = trainingSetCol.returnCompletedSet();
 		//trainingSetCol.printSet();
 		for(int i = 0; i < nArr.length; i++){
@@ -75,6 +96,7 @@ public class Trainer {
 		Imgproc.cvtColor(img, binary, Imgproc.COLOR_RGB2GRAY);
 		Imgproc.cvtColor(blur, blur_binary, Imgproc.COLOR_RGB2GRAY);
 		int dist[] = TrainingUtility.getInstance().meanValue(blur_hsv,binary, blur_binary);
+		graph.add(shape, dist, setName);
 		trainingSetShape.Add(shape, setName);
 		trainingSetCol.Add(dist, setName);
 	}

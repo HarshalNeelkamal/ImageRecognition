@@ -1,12 +1,20 @@
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.JApplet;
+
 import org.opencv.core.Core;
 
-public class MainClass implements Observer{
+public class MainClass extends JApplet implements Observer{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1808048169739900625L;
 	Tester tester = new Tester();
 	
 	public static void main(String args[]) {
@@ -15,25 +23,35 @@ public class MainClass implements Observer{
 		obj.run();
 	}
 	
+	public void init(){
+		this.setSize(200, 200);
+	}
+	
+	public void paint(Graphics g){
+		g.setColor(Color.RED);
+		g.fillRect(10, 10, 100, 100);
+	}
+	
 	public void run(){
 		UserInterface.getInstance().addObserver(this);
 		UserInterface.getInstance().show();
 	}
 
 	private void startTraining(String location){
-		String path = location;
-		File directory = new File(path);
-		String sets[] = directory.list();
+//		String path = location;
+//		File directory = new File(path);
+//		String sets[] = directory.list();
 		ArrayList<String> list = new ArrayList<String>();
-		if(sets != null){
-			for(int i = 0 ; i < sets.length; i ++){
-				Trainer.getInstance().trainAtLocation(path+"\\"+sets[i],sets[i]);
-				if(!list.contains(sets[i])){
-					list.add(sets[i]);
-				}
-			}
-
-		}
+		list = Trainer.getInstance().startWithDirectory(location);
+//		if(sets != null){
+//			for(int i = 0 ; i < sets.length; i ++){
+//				Trainer.getInstance().trainAtLocation(path+"\\"+sets[i],sets[i]);
+//				if(!list.contains(sets[i])){
+//					list.add(sets[i]);
+//				}
+//			}
+//
+//		}
 		Trainer.getInstance().trainingDone();
 		if(Trainer.getInstance().tree1.isEmpty() && Trainer.getInstance().tree2.isEmpty()){
 			UserInterface.getInstance().alertWithMsg("Invalid Location\n> The source Folder Should have sub folders\n> Each sub-folder name is a Lable for Trainig Set\n> Sub-Folders should have respective images for training");

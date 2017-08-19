@@ -173,18 +173,15 @@ public class TrainingUtility {
 			tempTop++;
 			tempLeft--;
 		}
-		//System.out.println(rightDiag+" "+leftDiag+" "+top+" "+bottom+" "+left+" "+right);
 
 		data[1] = (rightDiag*1.0)/data[0];
 		data[0] = (leftDiag*1.0)/data[0];
 		data[3] = (rightDiag*1.0)/data[2];
 		data[2] = (leftDiag*1.0)/data[2];
 		int intData[] = new int[data.length];
-		//System.out.println("double: "+data[0]+" "+data[1]+" "+data[2]+" "+data[3]+" ");
 		for(int i = 0; i < intData.length; i++){
 			intData[i] = (int)(data[i]*100);
 		}
-		//System.out.println("int: "+intData[0]+" "+intData[1]+" "+intData[2]+" "+intData[3]+" ");
 		return intData;
 	}
 	

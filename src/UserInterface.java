@@ -1,10 +1,13 @@
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SpringLayout;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -28,6 +33,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.OverlayLayout;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -44,14 +50,25 @@ public class UserInterface extends Observable{
 	JPanel panel2;
 	JComboBox<String> box;
 	JLabel imageholder;
-	TextField dataBase;
+	JTextArea dataBase;
+	Color backgroundColor = Color.BLACK;
+	Color innergroundColor = new Color(71, 255, 255);
+
 	
 	private static UserInterface instance = null;
 	
 	private UserInterface(){
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		
 		mainFrame = new JFrame("ImageRecognizer");
 		mainFrame.setVisible(false);
-		mainFrame.setSize(600, 700);
+		mainFrame.setSize(700, 700);
 		buildInterface();
 	}
 	
@@ -82,19 +99,58 @@ public class UserInterface extends Observable{
 		JFreeChart chart = ChartFactory.createBarChart("predictions", "fruits", "Probability", dcd, PlotOrientation.VERTICAL, true, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setRangeGridlinePaint(Color.black);
-		
 		ChartPanel panel = new ChartPanel(chart);
-		panel3.remove(1);
-		panel3.add(panel,2,1);
+		chart.setBackgroundPaint(backgroundColor);
+	
+		(((CategoryPlot) plot).getDomainAxis()).setLabelPaint(innergroundColor);
+		(((CategoryPlot) plot).getDomainAxis()).setAxisLinePaint(innergroundColor);
+		(((CategoryPlot) plot).getDomainAxis()).setTickLabelPaint(innergroundColor);
+		(((CategoryPlot) plot).getDomainAxis()).setTickMarkPaint(innergroundColor);
+
+		(((CategoryPlot) plot).getRangeAxis()).setLabelPaint(innergroundColor);
+		(((CategoryPlot) plot).getRangeAxis()).setAxisLinePaint(innergroundColor);
+		(((CategoryPlot) plot).getRangeAxis()).setTickLabelPaint(innergroundColor);
+		(((CategoryPlot) plot).getRangeAxis()).setTickMarkPaint(innergroundColor);
+		
+		chart.getTitle().setPaint(innergroundColor);
+		
+		panel3.remove(2);
+		panel3.add(panel,1,2);
 		panel3.updateUI();
 	}
 	
 	public void buildInterface(){
-		JLabel label1 = new JLabel("  Please paste a suitable URL or Brpowse a directory for your training set");
-		TextField field1 = new TextField();
+		
+		mainFrame.setBackground(backgroundColor);
+		mainFrame.setLayout(new OverlayLayout());
+		
+		TextField field1 = new TextField("Please paste a suitable URL or Browse a directory for your training set");
+		field1.setForeground(Color.GRAY);
+		//field1.setBackground(innergroundColor);
+		field1.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(field1.getText().isEmpty()){
+					field1.setForeground(Color.GRAY);
+					field1.setText("Please paste a suitable URL or Browse a directory for your training set");
+				}else{
+					field1.setForeground(Color.BLACK);
+				}
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				field1.setForeground(Color.BLACK);
+				if(field1.getText().equals("Please paste a suitable URL or Browse a directory for your training set")){
+					field1.setText("");
+				}
+			}
+		});
 		JButton browse1 = new JButton("Browse");
 		button1 = new JButton("Start training");
-		JPanel innerPanel1 = new JPanel();		
+		JPanel innerPanel1 = new JPanel();
+		innerPanel1.setBackground(backgroundColor);
 		SpringLayout layout = new SpringLayout();
 		innerPanel1.setLayout(layout);
 		innerPanel1.add(field1);
@@ -104,19 +160,40 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.EAST, browse1, -5, SpringLayout.WEST, button1);
 		layout.putConstraint(SpringLayout.EAST, button1, -5, SpringLayout.EAST, innerPanel1);
 		layout.putConstraint(SpringLayout.WEST, field1, 5, SpringLayout.WEST, innerPanel1);
-		layout.putConstraint(SpringLayout.NORTH, field1, 1, SpringLayout.NORTH, innerPanel1);
-		layout.putConstraint(SpringLayout.SOUTH, field1, -7, SpringLayout.SOUTH, innerPanel1);
-		layout.putConstraint(SpringLayout.NORTH, browse1, 1, SpringLayout.NORTH, innerPanel1);
-		layout.putConstraint(SpringLayout.SOUTH, browse1, -7, SpringLayout.SOUTH, innerPanel1);
-		layout.putConstraint(SpringLayout.NORTH, button1, 1, SpringLayout.NORTH, innerPanel1);
-		layout.putConstraint(SpringLayout.SOUTH, button1, -7, SpringLayout.SOUTH, innerPanel1);
+		layout.putConstraint(SpringLayout.NORTH, field1, 5, SpringLayout.NORTH, innerPanel1);
+		layout.putConstraint(SpringLayout.SOUTH, field1, -5, SpringLayout.SOUTH, innerPanel1);
+		layout.putConstraint(SpringLayout.NORTH, browse1, 5, SpringLayout.NORTH, innerPanel1);
+		layout.putConstraint(SpringLayout.SOUTH, browse1, -5, SpringLayout.SOUTH, innerPanel1);
+		layout.putConstraint(SpringLayout.NORTH, button1, 5, SpringLayout.NORTH, innerPanel1);
+		layout.putConstraint(SpringLayout.SOUTH, button1, -5, SpringLayout.SOUTH, innerPanel1);
 		
-		JLabel label2 = new JLabel("  Please paste a suitable path for the image that you desire to recognise");
-		TextField field2 = new TextField();
+		TextField field2 = new TextField("Please paste a suitable path for the image that you desire to recognise");
+		field2.setForeground(Color.GRAY);
+		field2.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(field2.getText().isEmpty()){
+					field2.setForeground(Color.GRAY);
+					field2.setText("Please paste a suitable path for the image that you desire to recognise");
+				}else{
+					field2.setForeground(Color.BLACK);
+				}
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				field2.setForeground(Color.BLACK);
+				if(field2.getText().equals("Please paste a suitable path for the image that you desire to recognise")){
+					field2.setText("");
+				}
+			}
+		});
 		JButton browse2 = new JButton("Browse");
 		button2 = new JButton("Predict");
 		button2.setEnabled(false);
 		JPanel innerPanel2 = new JPanel();
+		innerPanel2.setBackground(backgroundColor);
 		innerPanel2.setLayout(layout);
 		innerPanel2.add(field2);
 		innerPanel2.add(browse2);
@@ -125,20 +202,23 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.EAST, browse2, -5, SpringLayout.WEST, button2);
 		layout.putConstraint(SpringLayout.EAST, button2, -5, SpringLayout.EAST, innerPanel2);
 		layout.putConstraint(SpringLayout.WEST, field2, 5, SpringLayout.WEST, innerPanel2);
-		layout.putConstraint(SpringLayout.NORTH, field2, 1, SpringLayout.NORTH, innerPanel2);
-		layout.putConstraint(SpringLayout.SOUTH, field2, -7, SpringLayout.SOUTH, innerPanel2);
-		layout.putConstraint(SpringLayout.NORTH, browse2, 1, SpringLayout.NORTH, innerPanel2);
-		layout.putConstraint(SpringLayout.SOUTH, browse2, -7, SpringLayout.SOUTH, innerPanel2);
-		layout.putConstraint(SpringLayout.NORTH, button2, 1, SpringLayout.NORTH, innerPanel2);
-		layout.putConstraint(SpringLayout.SOUTH, button2, -7, SpringLayout.SOUTH, innerPanel2);
+		layout.putConstraint(SpringLayout.NORTH, field2, 5, SpringLayout.NORTH, innerPanel2);
+		layout.putConstraint(SpringLayout.SOUTH, field2, -5, SpringLayout.SOUTH, innerPanel2);
+		layout.putConstraint(SpringLayout.NORTH, browse2, 5, SpringLayout.NORTH, innerPanel2);
+		layout.putConstraint(SpringLayout.SOUTH, browse2, -5, SpringLayout.SOUTH, innerPanel2);
+		layout.putConstraint(SpringLayout.NORTH, button2, 5, SpringLayout.NORTH, innerPanel2);
+		layout.putConstraint(SpringLayout.SOUTH, button2, -5, SpringLayout.SOUTH, innerPanel2);
 		
-		JLabel label3 = new JLabel("  Enter a search key");
+		JLabel label3 = new JLabel(" Enter a search key");
+		label3.setForeground(innergroundColor);
+		label3.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
 		String options[] = {"apples", "bananas", "kiwi", "peaches", "Oranges", "Pineapple"};
 		box = new JComboBox<String>(options);
 		box.setSelectedItem(0);
 		button3 = new JButton("Find");
 		button3.setEnabled(false);
 		JPanel innerPanel3 = new JPanel();
+		innerPanel3.setBackground(backgroundColor);
 		innerPanel3.setLayout(layout);
 		innerPanel3.add(box);
 		innerPanel3.add(button3);
@@ -150,23 +230,19 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.NORTH, button3, 1, SpringLayout.NORTH, innerPanel3);
 		layout.putConstraint(SpringLayout.SOUTH, button3, -7, SpringLayout.SOUTH, innerPanel3);
 		
-//		JLabel label4 = new JLabel("  Please paste a suitable URL or Browse a directory for your image Data Base");
-		dataBase = new TextField();
+		dataBase = new JTextArea();
 		dataBase.setEditable(false);
 		dataBase.setFont(new Font("Serif", Font.BOLD, 16));
-//		JButton browse3 = new JButton("Browse");
 		JPanel innerPanel4 = new JPanel();		
+		innerPanel4.setBackground(backgroundColor);
 		innerPanel4.setLayout(layout);
 		innerPanel4.add(dataBase);
-//		innerPanel4.add(browse3);
-//		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.WEST, browse3);
-//		layout.putConstraint(SpringLayout.EAST, browse3, -5, SpringLayout.EAST, innerPanel4);
+
 		layout.putConstraint(SpringLayout.WEST, dataBase, 5, SpringLayout.WEST, innerPanel4);
 		layout.putConstraint(SpringLayout.EAST, dataBase, -5, SpringLayout.EAST, innerPanel4);//delete if others are uncommented
 		layout.putConstraint(SpringLayout.NORTH, dataBase, 1, SpringLayout.NORTH, innerPanel4);
 		layout.putConstraint(SpringLayout.SOUTH, dataBase, -7, SpringLayout.SOUTH, innerPanel4);
-//		layout.putConstraint(SpringLayout.NORTH, browse3, 1, SpringLayout.NORTH, innerPanel4);
-//		layout.putConstraint(SpringLayout.SOUTH, browse3, -7, SpringLayout.SOUTH, innerPanel4);
+
 		
 		button1.addActionListener(new ActionListener() {
 			@Override
@@ -179,9 +255,18 @@ public class UserInterface extends Observable{
 					toggleEnabledButton();
 				}else{
 					dataBase.setText("Training.....");
-					String arg[] = {button1.getText(),field1.getText()};
-					setChanged();
-					notifyObservers(arg);
+					dataBase.repaint();
+					dataBase.validate();
+					Thread t = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							String arg[] = {button1.getText(),field1.getText()};
+							setChanged();
+							notifyObservers(arg);
+						}
+					});
+					t.start();
 				}
 			}
 		});
@@ -194,6 +279,8 @@ public class UserInterface extends Observable{
 				if (choice != JFileChooser.APPROVE_OPTION) return;
 				File chosenFile = chooser.getSelectedFile();
 				String path = chosenFile.getPath();
+				if(!path.isEmpty())
+					field1.setForeground(Color.BLACK);
 				field1.setText(path);
 			}
 		});
@@ -215,6 +302,8 @@ public class UserInterface extends Observable{
 				if (choice != JFileChooser.APPROVE_OPTION) return;
 				File chosenFile = chooser.getSelectedFile();
 				String path = chosenFile.getPath();
+				if(!path.isEmpty())
+					field2.setForeground(Color.BLACK);
 				field2.setText(path);
 			}
 		});
@@ -228,21 +317,10 @@ public class UserInterface extends Observable{
 				
 			}
 		});
-//		browse3.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser("images");
-//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//				int choice = chooser.showOpenDialog(mainFrame);
-//				if (choice != JFileChooser.APPROVE_OPTION) return;
-//				File chosenFile = chooser.getSelectedFile();
-//				String path = chosenFile.getPath();
-//				dataBase.setText(path);
-//			}
-//		});
-		
 		
 		field4 = new JTextArea();
+		field4.setBackground(backgroundColor);
+		field4.setForeground(innergroundColor);
 		field4.setEditable(false);
 		
 		panel2 = new JPanel();
@@ -251,27 +329,30 @@ public class UserInterface extends Observable{
 		panel2inner.setLayout(new GridLayout(1, 1));
 		panel2inner.add(field4,0,0);
 		imageholder = new JLabel();
-				
+		imageholder.setBackground(backgroundColor);		
+		
 		panel2.add(panel2inner);
 		
 		JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayout(7, 1));
+		panel1.setBackground(backgroundColor);
+		panel1.setLayout(new GridLayout(5, 1));
 		panel1.setBounds(0, 0, mainFrame.getWidth()/2, mainFrame.getHeight() - 10);
-		panel1.add(label1);
 		panel1.add(innerPanel1);
-		panel1.add(label2);
 		panel1.add(innerPanel2);
 		panel1.add(label3);
 		panel1.add(innerPanel3);
-//		panel1.add(label4);
 		panel1.add(innerPanel4);
 		
 		panel3 = new JPanel();
 		panel3.setLayout(new GridLayout(3, 1));
 		panel3.add(panel1,0,0);
-		panel3.add(new JPanel(),2,1);
-		panel3.add(panel2,1,2);
+		
+		panel3.add(panel2,2,1);
+		
+		panel3.add(new JPanel(),1,2);
 		mainFrame.add(panel3);
+		JPanel p = new JPanel();
+		p.setBackground(innergroundColor);
 		addGraphChart(null);
 	}
 	
@@ -317,6 +398,7 @@ public class UserInterface extends Observable{
 		panel2inner.setLayout(new GridLayout(1, 2));
 		panel2inner.add(field4,0,0);		
 		panel2inner.add(imageholder, 1, 1);
+		panel2inner.setBackground(backgroundColor);
 		panel2.add(panel2inner);
 		
 		field4.setText(s);
@@ -335,13 +417,14 @@ public class UserInterface extends Observable{
 		panel2.removeAll();
 		JPanel panel2inner = new JPanel();
 		panel2inner.setLayout(new GridLayout(2, 5));
+		panel2inner.setBackground(backgroundColor);
 		panel2.add(panel2inner);
 		
 		for(int i = 0; i < list.size(); i++){
 			Mat img = Imgcodecs.imread(list.get(i));
 			JLabel tempLab = new JLabel();
 			panel2inner.add(tempLab, 0, 0);
-			Image image = mat2Img(img, panel2.getWidth()/8, panel2.getHeight()/2);
+			Image image = mat2Img(img, panel2.getWidth()/(list.size()/2 + list.size()%2), panel2.getHeight()/2);
 			ImageIcon icon = new ImageIcon(image);
 			tempLab.setIcon(icon);
 		}
@@ -371,8 +454,8 @@ public class UserInterface extends Observable{
     } 
 	
 	public void alertWithMsg(String msg){
-		JOptionPane.showMessageDialog(mainFrame, msg);
 		dataBase.setText("");
+		JOptionPane.showMessageDialog(mainFrame, msg);
 	}
 	
 	public void show(){

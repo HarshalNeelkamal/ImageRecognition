@@ -44,8 +44,11 @@ public class Tester {
 		}
 		//System.out.println("("+data[0]+", "+data[1]+", "+data[2]+", "+data[0]+")");
 		HashMap<String,Integer> map1 = Trainer.getInstance().tree1.nearestNeighoubrsFor(data);
+		int data1[] = data;
 		data = TrainingUtility.getInstance().getShape(testpath);
 		HashMap<String,Integer> map2 = Trainer.getInstance().tree2.nearestNeighoubrsFor(data);
+		
+		System.out.println("is a fruit :"+Trainer.getInstance().graph.isInCategory(data, data1));
 		
 		for(String key : map2.keySet()){
 			if(map1.containsKey(key)){
