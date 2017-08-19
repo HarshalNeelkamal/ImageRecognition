@@ -99,10 +99,5 @@ public class ComparisionParas {
 		moldForKtree();
 		return arr;
 	}
-//	public void printSet(){
-//		for(int i = 0; i < size; i++){
-//			System.out.println("("+arr[i].paras[0]+", "+arr[i].paras[1]+", "+arr[i].paras[2]+", "+arr[i].paras[3]+") "+arr[i].set);
-//		}
-//	}
 	
 }

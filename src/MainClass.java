@@ -38,21 +38,13 @@ public class MainClass extends JApplet implements Observer{
 	}
 
 	private void startTraining(String location){
-//		String path = location;
-//		File directory = new File(path);
-//		String sets[] = directory.list();
+
 		ArrayList<String> list = new ArrayList<String>();
-		list = Trainer.getInstance().startWithDirectory(location);
-//		if(sets != null){
-//			for(int i = 0 ; i < sets.length; i ++){
-//				Trainer.getInstance().trainAtLocation(path+"\\"+sets[i],sets[i]);
-//				if(!list.contains(sets[i])){
-//					list.add(sets[i]);
-//				}
-//			}
-//
-//		}
-		Trainer.getInstance().trainingDone();
+		if((new File(location).exists())){
+			list = Trainer.getInstance().startWithDirectory(location);
+			Trainer.getInstance().trainingDone();
+		}
+
 		if(Trainer.getInstance().tree1.isEmpty() && Trainer.getInstance().tree2.isEmpty()){
 			UserInterface.getInstance().alertWithMsg("Invalid Location\n> The source Folder Should have sub folders\n> Each sub-folder name is a Lable for Trainig Set\n> Sub-Folders should have respective images for training");
 		}else{
@@ -70,7 +62,7 @@ public class MainClass extends JApplet implements Observer{
 			startTraining(argument[1]);
 			break;
 		case "Predict":
-			tester.predict(argument[1]);
+			tester.predict(argument[1],argument[2]);
 			break;
 		case "Find":
 			tester.findImagesForKey(argument[1]);

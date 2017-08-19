@@ -29,7 +29,6 @@ public class TrainingUtility {
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();
 		Mat blur_binary = new Mat();
-		//Imgproc.resize(img, img, new Size(200,200));
 		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
 		Imgproc.GaussianBlur(img, blur, new Size(5,5), 25);
 		Imgproc.cvtColor(blur, blur_hsv, Imgproc.COLOR_RGB2HSV);
@@ -46,7 +45,6 @@ public class TrainingUtility {
 		Mat blur = new Mat();
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();
-		//Imgproc.resize(img, img, new Size(200,200));
 		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
 		Imgproc.GaussianBlur(img, blur, new Size(5,5), 25);
 		Imgproc.cvtColor(blur, blur_hsv, Imgproc.COLOR_RGB2HSV);
@@ -203,7 +201,6 @@ public class TrainingUtility {
 	public int[] meanValue(Mat img1, Mat binary, Mat blur_binary){
 		int mean[] = {0,0,0,0};
 		double count = 0;  
-		//double count1 = 0;
 			for(int i = 0 ; i < img1.size().height; i++){
 				for(int j = 0 ; j < img1.size().width; j++){
 					mean[0] += (int)img1.get(i, j)[0];

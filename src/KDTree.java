@@ -39,18 +39,6 @@ public class KDTree {
 	public HashMap<String,Integer> nearestNeighoubrsFor(int paras[]){
 		ComparisionParas.Node subSection = search(root, paras, 0);
 		HashMap<String,Integer> map = new HashMap<String,Integer>();
-//		map = addNeighoubrs(map, subSection);
-//		int count = 0;
-//		int max = 0;
-//		String set = "";
-//		for(String key : map.keySet()){
-//			count += map.get(key);
-//			if(map.get(key) > max){
-//				max = map.get(key);
-//				set = key;
-//			}
-//		}
-//		System.out.println("prediction is: "+set+" with Accurancy: "+(((max*1.0)/count)*100)+"%");
 		
 		Queue<ComparisionParas.Node> Q = new LinkedList<ComparisionParas.Node>();
 		Q = sortedNeighoubrsCollection(paras, subSection, Q);
@@ -127,10 +115,6 @@ public class KDTree {
 		if(dataPara[depth%parameters] < root.paras[depth%parameters]){
 			if(root.left != null && root.lCount < 4)
 				return root;
-//			else if(root.left != null)
-//				return search(root.left, dataPara, depth + 1);
-//			else 
-//				return root;
 			else if(root.left == null && root.rCount < 4)
 				return root;
 			else if(root.left != null)				
@@ -139,10 +123,6 @@ public class KDTree {
 		}else{
 			if(root.right != null && root.rCount < 4)
 				return root;
-//			else if(root.right != null)
-//				return search(root.right, dataPara, depth + 1);
-//			else 
-//				return root;
 			else if(root.right == null && root.lCount < 4)
 				return root;
 			else if(root.right != null)				

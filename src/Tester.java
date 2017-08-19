@@ -5,35 +5,49 @@ import java.util.HashMap;
 public class Tester {
 	
 	
-	public void predict(String testpath){
+	public void predict(String testpath, String method){
+		
 		
 		if(!testpath.endsWith(".jpg") || !(new File(testpath).exists())){
 			UserInterface.getInstance().addTextToResultsField("Invalid address");
 			return;
 		}
 		
-		HashMap<String,Integer> map = KNNDataFor(testpath);
 		
 		String s = "";
-		int count = 0;
-		int max = 0;
-		String result = "";
-		for(String key : map.keySet()){
-			count += map.get(key);
-			if(map.get(key) > max){
-				max = map.get(key);
-				result = key;
+		HashMap<String,Integer> map = null;
+		
+		if(method.equals("KD-Tree")){
+			map = KNNDataFor(testpath);
+			int count = 0;
+			int max = 0;
+			String result = "";
+			for(String key : map.keySet()){
+				count += map.get(key);
+				if(map.get(key) > max){
+					max = map.get(key);
+					result = key;
+				}
 			}
-		}
-		s = "  prediction is: "+result+"\n  acuraccy: "+((max*1.0)/count)*100+"%\n";
-		for(String key : map.keySet()){
-			s += "  Object is "+key+" with probablity "+map.get(key)+"/"+count+"\n";
+			s = "  prediction is: "+result+"\n  acuraccy: "+((max*1.0)/count)*100+"%\n";
+			for(String key : map.keySet()){
+				s += "  Object is "+key+" with probablity "+map.get(key)+"/"+count+"\n";
+			}
+			map.put("total", count);
+		}else{
+			s = predictionForMeansPoint(testpath);
 		}
 		
+		UserInterface.getInstance().addGraphChart(map);
 		System.out.println(s);
 		UserInterface.getInstance().addTextAndImageToResultsField(s,testpath);
-		map.put("total", count);
-		UserInterface.getInstance().addGraphChart(map);
+		
+	}
+	
+	private String predictionForMeansPoint(String testpath){
+		int data[] = TrainingUtility.getInstance().getMeanRGB(testpath);
+		int data1[] = TrainingUtility.getInstance().getShape(testpath);
+		return Trainer.getInstance().graph.isInCategory(data1, data);
 	}
 	
 	private HashMap<String,Integer> KNNDataFor(String testpath){
@@ -42,13 +56,11 @@ public class Tester {
 			System.out.println("invalid image path");
 			return null;
 		}
-		//System.out.println("("+data[0]+", "+data[1]+", "+data[2]+", "+data[0]+")");
 		HashMap<String,Integer> map1 = Trainer.getInstance().tree1.nearestNeighoubrsFor(data);
 		int data1[] = data;
 		data = TrainingUtility.getInstance().getShape(testpath);
 		HashMap<String,Integer> map2 = Trainer.getInstance().tree2.nearestNeighoubrsFor(data);
 		
-		System.out.println("is a fruit :"+Trainer.getInstance().graph.isInCategory(data, data1));
 		
 		for(String key : map2.keySet()){
 			if(map1.containsKey(key)){
@@ -107,36 +119,6 @@ public class Tester {
 		callForImages(baseAdd, results, searchKey, 0);
 		/////////////////////////////////////////////
 		
-//		File directory = new File(baseAdd);
-//		String images[] = directory.list();
-//		ArrayList<String> results = new ArrayList<String>();
-//		int resultsCount = 0;
-//		for(int i = 0; i < images.length; i++){
-//			HashMap<String,Integer> map = KNNDataFor(baseAdd+"\\"+images[i]);
-//			if(map == null){
-//				UserInterface.getInstance().addTextToResultsField("No pitchures found in database that match key:" );
-//				return;
-//			}
-//			int max = 0;
-//			String result = "";
-//			for(String key : map.keySet()){
-//				if(map.get(key) > max){
-//					max = map.get(key);
-//					result = key;
-//				}
-//			}
-//			if(result == searchKey){
-//				 results.add(baseAdd+"\\"+images[i]); 
-//				resultsCount++;
-//			}else if(map.containsKey(searchKey)){
-//				if(map.get(searchKey) == max){
-//					 results.add(baseAdd+"\\"+images[i]); 
-//					resultsCount++;
-//				}
-//			}
-//			if(resultsCount == 10)
-//				break;
-//		}
 		
 		if(results.size() == 0){
 			UserInterface.getInstance().addTextToResultsField("No pitchures found in database that match key: "+ searchKey);

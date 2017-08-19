@@ -100,7 +100,7 @@ public class LeaveOutGraph {
 		}
 	}
 	
-	public boolean isInCategory(int A[], int B[]){
+	public String isInCategory(int A[], int B[]){
 		Node n = new Node(A, B);
 		String bestSet = "";
 		double min = Double.MAX_VALUE;
@@ -115,7 +115,10 @@ public class LeaveOutGraph {
 			}
 		}	
 		System.out.println("best pred: "+bestSet);
-		return found;
+		if(!found){
+			bestSet = "Not a Fruit";
+		}
+		return " prediction: "+bestSet;
 	}
 	
 	private double outerEucledianDist(int arr[], int temp[]){
@@ -124,21 +127,6 @@ public class LeaveOutGraph {
 			dist += ((arr[i] - temp[i])*(arr[i] - temp[i]));
 		}
 		return Math.sqrt(dist);
-	}
-	
-	public void print(){
-//			for(int i = 0 ; i < graph.length; i++){
-//				List li = graph[i];
-//				Node temp = null;
-//				if(li != null){
-//					temp = li.root;
-//					System.out.println("section"+li.section);
-//				}
-//				while(temp != null){
-//					System.out.println("node"+temp.arr);
-//					temp = temp.next;
-//				}
-//			}
 	}
 	
 }

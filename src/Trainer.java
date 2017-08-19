@@ -64,16 +64,13 @@ public class Trainer {
 	}
 	
 	public void trainingDone(){
-		graph.print();
 		ComparisionParas.Node  nArr[] = trainingSetCol.returnCompletedSet();
-		//trainingSetCol.printSet();
 		for(int i = 0; i < nArr.length; i++){
 			if(nArr[i] == null)
 				break;
 			tree1.add(nArr[i]);
 		}
 		nArr = trainingSetShape.returnCompletedSet();
-		//trainingSetShape.printSet();
 		for(int i = 0; i < nArr.length; i++){
 			if(nArr[i] == null)
 				break;
@@ -86,7 +83,6 @@ public class Trainer {
 		Mat blur_hsv = new Mat();
 		Mat binary = new Mat();
 		Mat blur_binary = new Mat();
-		//Imgproc.resize(img, img, new Size(200,200));
 		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
 		Imgproc.GaussianBlur(img, blur, new Size(5,5), 25);
 		Imgproc.cvtColor(blur, blur_hsv, Imgproc.COLOR_RGB2HSV);

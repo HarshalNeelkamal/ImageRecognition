@@ -49,6 +49,7 @@ public class UserInterface extends Observable{
 	JButton button3;
 	JPanel panel2;
 	JComboBox<String> box;
+	JComboBox<String> predictionBox;
 	JLabel imageholder;
 	JTextArea dataBase;
 	Color backgroundColor = Color.BLACK;
@@ -209,9 +210,25 @@ public class UserInterface extends Observable{
 		layout.putConstraint(SpringLayout.NORTH, button2, 5, SpringLayout.NORTH, innerPanel2);
 		layout.putConstraint(SpringLayout.SOUTH, button2, -5, SpringLayout.SOUTH, innerPanel2);
 		
-		JLabel label3 = new JLabel(" Enter a search key");
+		JLabel label3 = new JLabel("Enter a search key");
 		label3.setForeground(innergroundColor);
 		label3.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+		JPanel newlyAddedPanel = new JPanel(layout);
+		newlyAddedPanel.add(label3);
+		String predictOptions[] = {"  KD-Tree ", "  mean point plot "};
+		predictionBox = new JComboBox<String>(predictOptions);
+		predictionBox.setSelectedItem(0);
+		newlyAddedPanel.add(predictionBox);
+		newlyAddedPanel.setBackground(backgroundColor);
+		layout.putConstraint(SpringLayout.EAST, label3, -5, SpringLayout.WEST, predictionBox);
+		layout.putConstraint(SpringLayout.EAST, predictionBox, -5, SpringLayout.EAST, newlyAddedPanel);
+		layout.putConstraint(SpringLayout.WEST, label3, 5, SpringLayout.WEST, newlyAddedPanel);
+		layout.putConstraint(SpringLayout.NORTH, label3, 1, SpringLayout.NORTH, newlyAddedPanel);
+		layout.putConstraint(SpringLayout.SOUTH, label3, -7, SpringLayout.SOUTH, newlyAddedPanel);
+		layout.putConstraint(SpringLayout.NORTH, predictionBox, 1, SpringLayout.NORTH, newlyAddedPanel);
+		layout.putConstraint(SpringLayout.SOUTH, predictionBox, -7, SpringLayout.SOUTH, newlyAddedPanel);
+		
+		
 		String options[] = {"apples", "bananas", "kiwi", "peaches", "Oranges", "Pineapple"};
 		box = new JComboBox<String>(options);
 		box.setSelectedItem(0);
@@ -287,7 +304,7 @@ public class UserInterface extends Observable{
 		button2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String arg[] = {button2.getText(),field2.getText()};
+				String arg[] = {button2.getText(),field2.getText(), ((String)predictionBox.getSelectedItem()).trim()};
 				dataBase.setText("");
 				setChanged();
 				notifyObservers(arg);
@@ -339,7 +356,7 @@ public class UserInterface extends Observable{
 		panel1.setBounds(0, 0, mainFrame.getWidth()/2, mainFrame.getHeight() - 10);
 		panel1.add(innerPanel1);
 		panel1.add(innerPanel2);
-		panel1.add(label3);
+		panel1.add(newlyAddedPanel);
 		panel1.add(innerPanel3);
 		panel1.add(innerPanel4);
 		
