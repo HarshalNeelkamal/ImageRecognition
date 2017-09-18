@@ -57,7 +57,6 @@ public class Tester {
 			return null;
 		}
 		HashMap<String,Integer> map1 = Trainer.getInstance().tree1.nearestNeighoubrsFor(data);
-		int data1[] = data;
 		data = TrainingUtility.getInstance().getShape(testpath);
 		HashMap<String,Integer> map2 = Trainer.getInstance().tree2.nearestNeighoubrsFor(data);
 		
@@ -86,21 +85,30 @@ public class Tester {
 			}
 		}else{
 			if(dir.endsWith(".jpg")){
-				HashMap<String,Integer> map = KNNDataFor(dir);
-				String result = "";
-				for(String key : map.keySet()){
-					if(map.get(key) > max){
-						max = map.get(key);
-						result = key;
+				
+//				if(false){
+//					String result = predictionForMeansPoint(dir);
+//					System.out.println("result "+result);
+//					if(result.contains(searchKey)){
+//						results.add(dir);
+//					}
+//				}else{
+					HashMap<String,Integer> map = KNNDataFor(dir);
+					String result = "";
+					for(String key : map.keySet()){
+						if(map.get(key) > max){
+							max = map.get(key);
+							result = key;
+						}
 					}
-				}
-				if(result == searchKey){
-					 results.add(dir); 
-				}else if(map.containsKey(searchKey)){
-					if(map.get(searchKey) == max){
+					if(result == searchKey){
 						 results.add(dir); 
+					}else if(map.containsKey(searchKey)){
+						if(map.get(searchKey) == max){
+							 results.add(dir); 
+						}
 					}
-				}
+//				}
 			}
 		}
 		
